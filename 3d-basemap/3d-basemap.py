@@ -2,18 +2,19 @@
 
 ''' created 9/16/18 by Brandon Molyneaux
 
-Using pandas, figure out the number of tornadoes in a state then 
-store in a dictionary, as well as the lat/lon of the "center" of the state.
+This plots a bar in the "center" of the state by number of tornadoes (by zipcode).
+Source: https://inkplant.com/code/state-latitudes-longitudes
 
-Pandas calculation
+Code adapted from Python Programming and Visualization for Scientists by Alex DeCaria.
 
-Code adapted from Python Programming and Visualization for Scientists by Alex DeCaria.'''
+Resultant image: 3d-basemap.png'''
 
 import matplotlib.pyplot as plt
 from matplotlib.collections import PolyCollection
 import numpy as np
 
-stateCount = {#'AK': [4, 61.370716, -152.404419],
+# 'State' : [# tornadoes, lat, lon]
+stateCount = {'AK': [4, 61.370716, -152.404419],
  'AL': [2099, 32.806671, -86.791130],
  'AR': [1775, 34.969704, -92.373123],
  'AZ': [245, 33.729759, -111.431221],
@@ -24,7 +25,7 @@ stateCount = {#'AK': [4, 61.370716, -152.404419],
  'DE': [61, 39.318523, -75.507141],
  'FL': [3335, 27.766279, -81.686783],
  'GA': [1628, 33.040619, -83.643074],
- #'HI': [41, 21.094318, -157.498337],
+ 'HI': [41, 21.094318, -157.498337],
  'IA': [2501, 42.011539, -93.210526],
  'ID': [209, 44.240459, -114.478828],
  'IL': [2443, 40.349457, -88.986137],
@@ -52,7 +53,7 @@ stateCount = {#'AK': [4, 61.370716, -152.404419],
  'OK': [3800, 35.565342, -96.928917],
  'OR': [112, 44.572021, -122.070938],
  'PA': [786, 40.590752, -77.209755],
- #'PR': [26, 18.200178, -66.664513],
+ 'PR': [26, 18.200178, -66.664513],
  'RI': [10, 41.680893, -71.511780],
  'SC': [989, 33.856892, -80.945007],
  'SD': [1773, 44.299782, -99.438828],
@@ -66,11 +67,12 @@ stateCount = {#'AK': [4, 61.370716, -152.404419],
  'WV': [138, 38.491226, -80.954453],
  'WY': [663, 42.755966, -107.302490]}
 
-
+# make numpy arrays for plotting.
 allTors = np.array([stateCount[key][0] for key in stateCount])
 lats = np.array([stateCount[key][1] for key in stateCount])
 lons = np.array([stateCount[key][2] for key in stateCount])
 
+# set up plot
 plt.close('all')
 fig = plt.figure(figsize = (12, 8))
 ax = fig.gca(projection='3d')
@@ -88,11 +90,11 @@ ax.set_zlabel(u'Tornadoes', labelpad = 4, size = 'small')
 for t in ax.zaxis.get_major_ticks(): 
     t.label.set_fontsize(5)
 
+# convert to map projection and plot
 x, y = m(lons, lats)
-
 ax.bar3d(x, y, np.array([0] * len(lats)), 0.5, 0.5, allTors, color = 'r', alpha = 0.5)
 
+# more stuff with the graph
 plt.title("Tornado # by state in 3D", size = 'medium')
-
 ax.set_zlim(0., 9000)
 plt.show()
