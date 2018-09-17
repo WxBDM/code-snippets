@@ -5,8 +5,6 @@
 This plots a bar in the "center" of the state by number of tornadoes (by zipcode).
 Source: https://inkplant.com/code/state-latitudes-longitudes
 
-Code adapted from Python Programming and Visualization for Scientists by Alex DeCaria.
-
 Resultant image: 3d-basemap.png'''
 
 import matplotlib.pyplot as plt
