@@ -38,7 +38,7 @@ f = netCDF4.Dataset(path + file_name, 'r')
 initialization = file_name[11:27].replace('%3A', '').replace('-','').replace('_', '') + 'Z'
 
 #gets variable names
-[variables.append(v) for v in f.variables]
+variables = [v for v in f.variables]
 
 for i in range(0, 25):
     run += 3
