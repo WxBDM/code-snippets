@@ -183,12 +183,3 @@ Note that this requires sequential order and will not allow duplicates.
             pointer = pointer.next
         
         return to_str
-
-
-nodes = DoublyLinkedList()
-for i in range(0, 101, 2):
-    nodes.add(i)
-nodes.add(2.05)
-nodes.print_all()
-
-
