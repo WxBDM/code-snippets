@@ -84,18 +84,18 @@ print_all()
         return False
             
    
-    def print_all(self, traverse_forward = True):
+    def print_all(self, traverse_down = True):
         '''Prints the elements using __str__()'''
-        print(self.__str__(traverse_forward))
+        print(self.__str__(traverse_down))
     
-    def __str__(self, traverse_forward):
+    def __str__(self, traverse_down):
         '''Puts the elements into a string and returns string. Can traverse
         forwards or backwards.'''
 
         to_str = 'Elements of node-based Stack: ' # creates initial string
         
         # creates either a pointer at front or rear.
-        pointer = self._create_pointer() if traverse_forward == True \
+        pointer = self._create_pointer() if traverse_down == True \
             else self._create_pointer(rear = True)
         
         # traverse through nodes
@@ -107,6 +107,6 @@ print_all()
             else:
                 to_str += str(pointer.element) + " -> "
             
-            pointer = pointer.next if traverse_forward == True else pointer.prev
+            pointer = pointer.next if traverse_down == True else pointer.prev
         
         return to_str
