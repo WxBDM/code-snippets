@@ -48,29 +48,38 @@ print_all()
         return DoublyLinkedStack.Node(element) 
     
     def push(self, element):
-        
+        '''Pushes an element to the stack'''
         n = self._make_new_node(element)
         
         if self.size == 0:
             self.front = n
             self.rear = n
             self.size += 1
+            return True
         else:
             n.prev = self.rear
             self.rear.next = n
             self.rear = n
             self.size += 1
+            return True
+        
+        return False
         
     def pop(self):
+        
+        pointer = self._create_pointer(rear = True)
+        element = pointer.element
         
         if self.size == 1:
             self.front = None
             self.rear = None
             self.size -= 1
+            return element
         else:
             self.rear = self.rear.prev
             self.rear.next = None
-            self.size -= 1     
+            self.size -= 1
+            return element
 
     def contains(self, element):
         '''Linear scan to determine if an instance of element occurs.
