@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class DoublyLinkedStructures(object):
     
     class Node:
@@ -11,21 +12,6 @@ class DoublyLinkedStructures(object):
         self.front = None
         self.rear = None
         self.size = 0
-    
-    def _make_new_node(self, element = None):
-        '''Creates a new node with a specified element.'''
-        return DoublyLinkedStructures.Node(element)
-    
-    def _create_pointer(self, rear = False):
-        '''Creates a pointer node. Default: front node.'''
-        pointer_node = self._make_new_node()
-
-        if rear:
-            pointer_node = self.rear
-        else:
-            pointer_node = self.front
-        
-        return pointer_node
     
     def __call__(self):
         '''Prints out a few statements regarding the instance'''
@@ -102,11 +88,37 @@ class DoublyLinkedStructures(object):
             elif i == self.size - 1:
                 to_str += "[" + str(pointer.element)
             else:
-                to_str += "[" + str(pointer.element) + "] ⇔ "
+                to_str += "[" + str(pointer.element) + "] <=> "
             
             pointer = pointer.next
         
         return to_str + "]"
+
+    @staticmethod
+    def _make_new_node(element = None):
+        '''Creates a new node with a specified element.'''
+        return DoublyLinkedStructures.Node(element)
+    
+    def _check_boolean_type(self, boolean, parameter):
+        if boolean:
+            self._allow_duplicates = True
+        elif not boolean:
+            self._allow_duplicates = False
+        else:
+            raise AttributeError("{} parameter must be of " + \
+                "boolean type".format(parameter))
+        return boolean
+    
+    def _create_pointer(self, rear = False):
+        '''Creates a pointer node. Default: front node.'''
+        pointer_node = self._make_new_node()
+
+        if rear:
+            pointer_node = self.rear
+        else:
+            pointer_node = self.front
+        
+        return pointer_node
 
     def _add_first_node(self, n):
         '''Add a node if the size is zero.'''
@@ -164,24 +176,12 @@ class DoublyLinkedStructures(object):
         return element
 
 class DoublyLinkedStack(DoublyLinkedStructures):
-    '''Doubly linked stack data structure. 
-    
-    Methods:
-        | push(element) => Pushes an element onto the top of the stack.
-        |   Returns true if the element was added.
-        | pop() => Pops the top element. Returns the number popped.
-        
-'''
+    '''Doubly linked stack data structure.'''
     
     def __init__(self, allow_duplicates = True):
         super(DoublyLinkedStack, self).__init__()
-        
-        if allow_duplicates == True:
-            self._allow_duplicates = True
-        elif allow_duplicates == False:
-            self._allow_duplicates = False
-        else:
-            raise AttributeError("allow_duplicates must be boolean type")
+        self._allow_duplicates = self._check_boolean_type(allow_duplicates, 
+                "allow_duplicates")
       
     def _contains(self, element):
         '''Checks to see if the element exists in the set.'''
@@ -189,10 +189,10 @@ class DoublyLinkedStack(DoublyLinkedStructures):
     
     def push(self, element):
         '''Adds a node to the top of the stack. Returns True if added.
-Returns False if not added (only applicable in the allow_duplicates = False
-case).'''
+Returns False if not added (only applicable if allow_duplicates is False).'''
         node = self._make_new_node(element)
         
+        # checks to see if there's a duplicate in there.
         if not self._allow_duplicates:
             if self._contains(element):
                 return False
@@ -203,7 +203,7 @@ case).'''
             return self._add_rear_node(node)
         
     def pop(self):
-        '''removes the node at the top of the stack. Returns the element.'''
+        '''Removes the node at the top of the stack. Returns the element.'''
         if self.size == 0:
             return False
         
@@ -213,33 +213,122 @@ case).'''
         return self._remove_rear_node()
     
 class DoublyLinkedQueue(DoublyLinkedStructures):
+    '''Queue data structure. Supports double ended queue (deque) behavior.
+    Currently does *not* support cyclic behavior.'''
     
-    '''Queue data structure - first in last out.'''
-    
-    def __init__(self, cyclic = False):
+    def __init__(self, allow_duplicates = True, deque = False):
         super(DoublyLinkedQueue, self).__init__()
         
-    def enqueue(self, element):
-        '''Queues an element at the rear'''
-        node = self._make_new_node(element)
+        # checks to make sure the parameters are of boolean type.
+        self._allow_duplicates = self._check_boolean_type(allow_duplicates, 
+                "allow_duplicates")
+        self._deque = self._check_boolean_type(deque, "deque")
 
-        if self.size == 0:
-            self._add_first_node(node)
-        else:
-            self._add_rear_node(node)
+        # error phrase.
+        self._error_phrase = "Method is for when deque = True." if \
+            deque is False else "Method is for when deque = False."
+        
+    def _contains(self, element):
+        '''Checks to see if the element exists in the set.'''
+        return self.__contains__(element)
     
-    def dequeue(self):
-        '''Dequeues the first element in queue'''
+    def _enqueue(self, element):
+        '''Enqueues an element to the rear. We use the same logic twice.'''
+        # check to see if duplicates are allowed. If so, check to see if the
+        #   collection contains it.
+        if not self._allow_duplicates:
+            if self._contains(element):
+                return False 
+                
+        # create a new node and add it into the queue.
+        node = self._make_new_node(element)
+        if self.size == 0:
+            return self._add_first_node(node)
+        
+        return self._add_rear_node(node)
+        
+    def enqueue(self, element):
+        '''Queues an element at the rear with non-double ended queue behavior.
+        Will throw an error if called and deque = True'''
+        
+        # if the user wants double ended queue behavior, don't use this function
+        #   so, raise an error.
+        if self._deque:
+            raise AttributeError("{0}. ".format(self._error_phrase) + 
+                "Try enqueue_front(element) or enqueue_rear(element)")
+        
+        return self._enqueue(element)
+    
+    def _dequeue(self):
+        '''Dequeues the last node. We use this logic twice.'''
         if self.size == 0:
             return False
         
         if self.size == 1:
             return self._remove_final_node()
-        else:
-            return self._remove_first_node()
-
-class DoublyLinkedBag(DoublyLinkedStructures):
+        
+        return self._remove_front_node()
     
+    def dequeue(self):
+        '''Dequeues the front node with non-double ended queue behavior.
+        Will throw an error if called and deque = True.'''
+        
+        # if the user wants double ended queue behavior, don't use this function
+        #   so, raise an error.
+        if self._deque:
+            raise AttributeError("{} ".format(self._error_phrase) + 
+                "Try dequeue_front() or dequeue_rear()")
+                
+        return self._dequeue()
+    
+    def enqueue_rear(self, element):
+        '''Method to add to the rear for double-ended queue behavior.
+        Will throw an error if called and deque = False'''
+        
+        if self._deque:
+            self._enqueue(element)
+        else:
+            raise AttributeError("{} Use enqueue().".format(self._error_phrase))
+    
+    def dequeue_rear(self):
+        '''Method to remove from the rear for double-ended queue behavior.
+        Will throw an error if called and deque = False.'''
+        
+        if self._deque:
+            return self._dequeue()
+        else:
+            raise AttributeError("{} Use dequeue().")
+    
+    def enqueue_front(self, element):
+        '''Method to add to the front for double-ended queue behavior.
+        Will throw an error if called and deque = False.'''
+                
+        if self._deque:
+            node = self._make_new_node(element)
+
+            if self.size == 0:
+                return self._add_first_node(node)
+            
+            return self._add_front_node(node)
+        else:
+            raise AttributeError("{} Use enqueue().".format(self._error_phrase))
+    
+    def dequeue_front(self):
+        '''Method to remove front for double-ended queue behavior.
+        Will throw an error if called and deque = False.'''
+        
+        if self._deque:
+            if self.size == 0:
+                return False
+            
+            if self.size == 1:
+                return self._remove_final_node()
+            
+            return self._remove_front_node()
+        else:
+            raise AttributeError("{} Use dequeue().".format(self._error_phrase))
+        
+class DoublyLinkedBag(DoublyLinkedStructures):
     '''Unordered, allows duplicates.'''
     
     def __init__(self):
@@ -266,8 +355,6 @@ class DoublyLinkedBag(DoublyLinkedStructures):
                     return self._remove_rear_node()
                 return self._remove_middle_node(pointer)
             pointer = pointer.next
-        
-        
     
     def contains(self, element):
         '''Checks to see if the element exists in the set.'''
