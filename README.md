@@ -1,4 +1,4 @@
-# code-snippets
+# Code Snippets
 
 This repository is a collection of a variety of code snippets in the python language.
 
